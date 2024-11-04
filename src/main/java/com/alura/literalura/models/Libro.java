@@ -1,11 +1,21 @@
 package com.alura.literalura.models;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "Libros")
 public class Libro {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
 
     String titulo;
-    Autor autor;
+    @Enumerated(EnumType.STRING)
     Idioma idioma;
     int numeroDescargas;
+
+    @OneToOne(mappedBy = "libro", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    Autor autor;
 
     public Libro(){}
 
@@ -21,6 +31,14 @@ public class Libro {
                                 datosLibro.autors().getFirst().anioFallecimiento());
         this.idioma = datosLibro.idiomas().getFirst();
         this.numeroDescargas = datosLibro.numeroDescargas();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTitulo() {
