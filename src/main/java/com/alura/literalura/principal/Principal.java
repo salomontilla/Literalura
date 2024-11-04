@@ -25,9 +25,23 @@ public class Principal {
     }
 
     private void seleccion() {
-        System.out.println("Introduce el número de la opción que deseas: ");
-        int opcion = sc.nextInt();
-        sc.nextLine();
+        int opcion = -1; // Valor inicial para que entre en el bucle
+        boolean entradaValida = false;
+
+        while (!entradaValida) {
+            System.out.println("Introduce el número de la opción que deseas: ");
+            String entrada = sc.nextLine();
+
+            // Verificar si la entrada es un número
+            if (esNumero(entrada)) {
+                opcion = Integer.parseInt(entrada);
+                entradaValida = true;
+            } else {
+                System.out.println("Entrada inválida. Por favor, introduce solo números.");
+            }
+        }
+
+        // Ejecutar la opción seleccionada
         switch (opcion) {
             case 1:
                 bucarLibro();
@@ -50,6 +64,17 @@ public class Principal {
                 break;
         }
     }
+
+    // Método auxiliar para verificar si una cadena es numérica
+    private boolean esNumero(String cadena) {
+        try {
+            Integer.parseInt(cadena);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     String URL_BASE = "https://gutendex.com/books/?search=";
     private ConsumoAPI consumoApi = new ConsumoAPI();
     private Conversor conversor = new Conversor();
@@ -60,7 +85,7 @@ public class Principal {
 
         return respuesta.libros().stream()
                 .findFirst()
-                .map(l -> new DatosLibro(l.titulo(), l.autors(), l.idiomas()))
+                .map(l -> new DatosLibro(l.titulo(), l.autors(), l.idiomas(), l.numeroDescargas()))
                 .orElse(null);
     }
 
