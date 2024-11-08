@@ -3,16 +3,21 @@ package com.alura.literalura.principal;
 import com.alura.literalura.models.DatosLibro;
 import com.alura.literalura.models.DatosRespuesta;
 import com.alura.literalura.models.Libro;
+import com.alura.literalura.repository.LibroRepository;
 import com.alura.literalura.services.ConsumoAPI;
 import com.alura.literalura.services.Conversor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
 
 public class Principal {
     Scanner sc = new Scanner(System.in);
+    LibroRepository repository;
 
+    public Principal(LibroRepository repository) {
+        this.repository = repository;
+    }
     public void mostrarMenu() {
         System.out.println("----Literalura----");
         System.out.println("1 - Buscar libro");
@@ -25,7 +30,7 @@ public class Principal {
     }
 
     private void seleccion() {
-        int opcion = -1; // Valor inicial para que entre en el bucle
+        int opcion = -1;
         boolean entradaValida = false;
 
         while (!entradaValida) {
@@ -41,7 +46,6 @@ public class Principal {
             }
         }
 
-        // Ejecutar la opción seleccionada
         switch (opcion) {
             case 1:
                 bucarLibro();
@@ -96,6 +100,13 @@ public class Principal {
         DatosLibro datosLibro = obtenerDatosLibro(titulo);
         Libro libro = new Libro(datosLibro);
         System.out.println(libro.toString());
+        repository.save(libro);
+        verLibrosBuscados();
+    }
 
+    List<Libro> libros;
+    private void verLibrosBuscados(){
+        libros = repository.findAll();
+        libros.forEach(System.out::println);
     }
 }

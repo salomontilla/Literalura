@@ -7,7 +7,9 @@ public enum Idioma {
     INGLES("en","Inglés"),
     FRANCES("fr","Francés"),
     PORTUGUES("pt","Portugués"),
-    ITALIANO("it","Italiano");
+    ITALIANO("it","Italiano"),
+    HUNGRIA("hu", "Hungaro"),
+    FINLANDIA("fi", "Finlandés");
 
     private String idiomaApi;
     private String idiomaEsp;
@@ -16,11 +18,10 @@ public enum Idioma {
         this.idiomaApi = idiomaApi;
         this.idiomaEsp = idiomaEsp;
     }
-
     @JsonCreator
     public static Idioma obtenerIdioma(String idiomaApi) {
         for (Idioma idioma : Idioma.values()) {
-            if (idioma.idiomaApi.equalsIgnoreCase(idiomaApi)) {
+            if (idioma.idiomaApi.equals(idiomaApi)) {
                 return idioma;
             }
         }

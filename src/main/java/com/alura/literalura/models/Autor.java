@@ -10,12 +10,13 @@ public class Autor {
     long id;
 
     String nombre;
-    int anioNacimiento;
-    int anioFallecimiento;
-    @OneToOne
+    Integer anioNacimiento;
+    Integer anioFallecimiento;
+
+    @OneToOne(mappedBy = "autor", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     Libro libro;
 
-    public Autor(String nombre, int anioNacimiento, int anioFallecimiento) {
+    public Autor(String nombre, Integer anioNacimiento, Integer anioFallecimiento) {
         this.nombre = nombre;
         this.anioNacimiento = anioNacimiento;
         this.anioFallecimiento = anioFallecimiento;
@@ -39,19 +40,19 @@ public class Autor {
         this.nombre = nombre;
     }
 
-    public int getAnioNacimiento() {
+    public Integer getAnioNacimiento() {
         return anioNacimiento;
     }
 
-    public void setAnioNacimiento(int anioNacimiento) {
+    public void setAnioNacimiento(Integer anioNacimiento) {
         this.anioNacimiento = anioNacimiento;
     }
 
-    public int getAnioFallecimiento() {
+    public Integer getAnioFallecimiento() {
         return anioFallecimiento;
     }
 
-    public void setAnioFallecimiento(int anioFallecimiento) {
+    public void setAnioFallecimiento(Integer anioFallecimiento) {
         this.anioFallecimiento = anioFallecimiento;
     }
 

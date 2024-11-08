@@ -8,27 +8,33 @@ public class Libro {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-
+    @Column(unique = true)
     String titulo;
     @Enumerated(EnumType.STRING)
     Idioma idioma;
-    int numeroDescargas;
+    Integer numeroDescargas;
 
-    @OneToOne(mappedBy = "libro", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "autor_id")
     Autor autor;
 
     public Libro(){}
 
-    public Libro(String titulo, Autor autor, Idioma idioma, int numeroDescargas) {
+    public Libro(String titulo, Autor autor, Idioma idioma, Integer numeroDescargas) {
         this.titulo = titulo;
         this.autor = autor;
         this.idioma = idioma;
         this.numeroDescargas = numeroDescargas;
     }
-    public Libro(DatosLibro datosLibro){
+    public Libro(DatosLibro datosLibro) {
         this.titulo = datosLibro.titulo();
-        this.autor = new Autor(datosLibro.autors().getFirst().nombre(), datosLibro.autors().getFirst().anioNacimiento(),
-                                datosLibro.autors().getFirst().anioFallecimiento());
+
+        this.autor = new Autor(datosLibro.autors().get(0).nombre(),
+                datosLibro.autors().get(0).anioNacimiento(),
+                datosLibro.autors().get(0).anioFallecimiento());
+
+        this.autor.setLibro(this);
+
         this.idioma = datosLibro.idiomas().getFirst();
         this.numeroDescargas = datosLibro.numeroDescargas();
     }
