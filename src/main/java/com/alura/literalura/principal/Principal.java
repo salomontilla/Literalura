@@ -2,6 +2,7 @@ package com.alura.literalura.principal;
 
 import com.alura.literalura.models.DatosLibro;
 import com.alura.literalura.models.DatosRespuesta;
+import com.alura.literalura.models.Idioma;
 import com.alura.literalura.models.Libro;
 import com.alura.literalura.repository.LibroRepository;
 import com.alura.literalura.services.ConsumoAPI;
@@ -9,7 +10,9 @@ import com.alura.literalura.services.Conversor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Principal {
     Scanner sc = new Scanner(System.in);
@@ -22,7 +25,7 @@ public class Principal {
         System.out.println("----Literalura----");
         System.out.println("1 - Buscar libro");
         System.out.println("2 - Ver tu historial de libros");
-        System.out.println("3 - Ver tu historial de autores");
+        System.out.println("3 - Mostrar libros por idioma");
         System.out.println("4 - Mostrar autores vivos en un determinado año");
         System.out.println("5 - Ver libros por idiomas");
         System.out.println("------------------");
@@ -52,10 +55,12 @@ public class Principal {
                 mostrarMenu();
                 break;
             case 2:
-                // mostrarHistorialLibros();
+                mostrarHistorialLibros();
+                mostrarMenu();
                 break;
             case 3:
-                // mostrarHistorialAutores();
+                mostrarEstadisticasPorIdioma();
+                mostrarMenu();
                 break;
             case 4:
                 // mostrarAutoresVivos();
@@ -101,12 +106,20 @@ public class Principal {
         Libro libro = new Libro(datosLibro);
         System.out.println(libro.toString());
         repository.save(libro);
-        verLibrosBuscados();
     }
 
     List<Libro> libros;
-    private void verLibrosBuscados(){
+    private void mostrarHistorialLibros(){
+        System.out.println("-----Historial-----");
         libros = repository.findAll();
         libros.forEach(System.out::println);
+    }
+
+    public void mostrarEstadisticasPorIdioma() {
+        Map<Idioma, Long> estadisticas = repository.findAll().stream()
+                .collect(Collectors.groupingBy(Libro::getIdioma, Collectors.counting()));
+
+        estadisticas.forEach((idioma, count) ->
+                System.out.println("Idioma: " + idioma + ", Cantidad de libros: " + count));
     }
 }
