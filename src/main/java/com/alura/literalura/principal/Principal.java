@@ -121,5 +121,28 @@ public class Principal {
 
         estadisticas.forEach((idioma, count) ->
                 System.out.println("Idioma: " + idioma + ", Cantidad de libros: " + count));
+        mostrarLibrosPorIdioma();
+    }
+
+    public void mostrarLibrosPorIdioma() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("\nIntroduce el idioma de los libros que deseas buscar:\n" +
+                "es -> español\n"+
+                "en -> inglés\n" +
+                "fr -> francés\n"+
+                "pt -> portugués");
+        String idiomaInput = scanner.nextLine();
+
+        Idioma idioma;
+        try {
+            idioma = Idioma.obtenerIdioma(idiomaInput);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Idioma no válido. Asegúrate de ingresar un idioma soportado.");
+            return;
+        }
+
+        List<Libro> librosEnIdioma = repository.findByIdioma(idioma);
+        librosEnIdioma.forEach(libro -> System.out.println(libro.toString()));
     }
 }
