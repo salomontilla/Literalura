@@ -1,13 +1,10 @@
 package com.alura.literalura.principal;
 
-import com.alura.literalura.models.DatosLibro;
-import com.alura.literalura.models.DatosRespuesta;
-import com.alura.literalura.models.Idioma;
-import com.alura.literalura.models.Libro;
+import com.alura.literalura.models.*;
+import com.alura.literalura.repository.AutorRepository;
 import com.alura.literalura.repository.LibroRepository;
 import com.alura.literalura.services.ConsumoAPI;
 import com.alura.literalura.services.Conversor;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Map;
@@ -17,9 +14,11 @@ import java.util.stream.Collectors;
 public class Principal {
     Scanner sc = new Scanner(System.in);
     LibroRepository repository;
+    AutorRepository autorRepository;
 
-    public Principal(LibroRepository repository) {
+    public Principal(LibroRepository repository, AutorRepository autorRepository) {
         this.repository = repository;
+        this.autorRepository = autorRepository;
     }
     public void mostrarMenu() {
         System.out.println("----Literalura----");
@@ -63,7 +62,8 @@ public class Principal {
                 mostrarMenu();
                 break;
             case 4:
-                // mostrarAutoresVivos();
+                mostrarAutoresRegistrados();
+                mostrarMenu();
                 break;
             case 5:
                 // mostrarLibrosPorIdioma();
@@ -144,5 +144,22 @@ public class Principal {
 
         List<Libro> librosEnIdioma = repository.findByIdioma(idioma);
         librosEnIdioma.forEach(libro -> System.out.println(libro.toString()));
+    }
+
+    private void mostrarAutoresRegistrados() {
+        System.out.println("-----Autores registrados-----");
+        List<Autor> autores = autorRepository.findAll();
+
+        for (Autor autor : autores) {
+            System.out.println("Autor: " + autor.getNombre() +
+                    " (Nacido: " + autor.getAnioNacimiento() +
+                    ", Fallecido: " + autor.getAnioFallecimiento() + ")");
+            System.out.println("Libros:");
+
+            for (Libro libro : autor.getLibros()) {
+                System.out.println("  - " + libro.getTitulo());
+            }
+            System.out.println();
+        }
     }
 }

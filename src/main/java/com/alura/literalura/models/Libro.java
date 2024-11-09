@@ -14,7 +14,7 @@ public class Libro {
     Idioma idioma;
     Integer numeroDescargas;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "autor_id")
     Autor autor;
 
@@ -33,7 +33,7 @@ public class Libro {
                 datosLibro.autors().get(0).anioNacimiento(),
                 datosLibro.autors().get(0).anioFallecimiento());
 
-        this.autor.setLibro(this);
+        this.autor.setLibro(this.autor.getLibros());
 
         this.idioma = datosLibro.idiomas().getFirst();
         this.numeroDescargas = datosLibro.numeroDescargas();
