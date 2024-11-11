@@ -26,12 +26,10 @@ public class Libro {
         this.idioma = idioma;
         this.numeroDescargas = numeroDescargas;
     }
-    public Libro(DatosLibro datosLibro) {
+    public Libro(DatosLibro datosLibro, Autor autor) {
         this.titulo = datosLibro.titulo();
 
-        this.autor = new Autor(datosLibro.autors().get(0).nombre(),
-                datosLibro.autors().get(0).anioNacimiento(),
-                datosLibro.autors().get(0).anioFallecimiento());
+        this.autor = autor;
 
         this.autor.setLibro(this.autor.getLibros());
 

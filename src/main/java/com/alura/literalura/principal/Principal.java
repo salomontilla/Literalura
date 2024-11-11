@@ -90,7 +90,13 @@ public class Principal {
             if (datosLibro == null) {
                 System.out.println("No se encontró ningún libro con el título: " + titulo);
             } else {
-                Libro libro = new Libro(datosLibro);
+                Optional<Autor> autorExistente = autorRepository.findByNombre(datosLibro.autors().get(0).nombre());
+                Autor autor = autorExistente.orElseGet(() ->
+                        new Autor(datosLibro.autors().get(0).nombre(),
+                                datosLibro.autors().get(0).anioNacimiento(),
+                                datosLibro.autors().get(0).anioFallecimiento()));
+
+                Libro libro = new Libro(datosLibro, autor);
                 System.out.println(libro.toString());
                 try {
                     repository.save(libro);
@@ -152,30 +158,28 @@ public class Principal {
         System.out.println("-----Autores registrados-----");
         List<Autor> autores = autorRepository.findAll();
         if(!autores.isEmpty()){
-            for (Autor autor : autores) {
-                System.out.println("Autor: " + autor.getNombre() +
-                        " (Nacido: " + autor.getAnioNacimiento() +
-                        ", Fallecido: " + autor.getAnioFallecimiento() + ")");
-                System.out.println("Libros:");
-
-                for (Libro libro : autor.getLibros()) {
-                    System.out.println("  - " + libro.toString());
-                }
-
-                System.out.println(); // Separador entre autores
-            }
+            autores.forEach(this::autorToString);
         }else{
-            System.out.println("No hay autores vivos en ese año!");
+            System.out.println("No se encontraron autores!");
         }
 
     }
 
     private void mostrarAutoresVivos() {
-        System.out.println("------Autores Vivos-----");
-        System.out.println("Ingresa el año: ");
-        int anioIngresado = sc.nextInt();
-        List<Autor> autores = autorRepository.findAutoresVivosEnAno(anioIngresado);
-        autores.forEach(this::autorToString);
+        try{
+            System.out.println("------Autores Vivos-----");
+            System.out.println("Ingresa el año: ");
+            int anioIngresado = sc.nextInt();
+            List<Autor> autores = autorRepository.findAutoresVivosEnAno(anioIngresado);
+            if(!autores.isEmpty()){
+                autores.forEach(this::autorToString);
+            }else{
+                System.out.println("No se encontraron autores vivos!");
+            }
+        }catch (InputMismatchException e){
+            System.out.println("Ingresa un valor válido!");
+        }
+
 
 
     }
