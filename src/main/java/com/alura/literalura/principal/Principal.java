@@ -5,10 +5,10 @@ import com.alura.literalura.repository.AutorRepository;
 import com.alura.literalura.repository.LibroRepository;
 import com.alura.literalura.services.ConsumoAPI;
 import com.alura.literalura.services.Conversor;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Principal {
@@ -21,66 +21,49 @@ public class Principal {
         this.autorRepository = autorRepository;
     }
     public void mostrarMenu() {
-        System.out.println("----Literalura----");
-        System.out.println("1 - Buscar libro");
-        System.out.println("2 - Ver tu historial de libros");
-        System.out.println("3 - Mostrar libros por idioma");
-        System.out.println("4 - Mostrar autores vivos en un determinado año");
-        System.out.println("5 - Ver libros por idiomas");
-        System.out.println("------------------");
-        seleccion();
-    }
-
-    private void seleccion() {
         int opcion = -1;
-        boolean entradaValida = false;
 
-        while (!entradaValida) {
+        while (opcion != 0) {
+            var menu = """
+                    ----Literatura----
+                    1 - Buscar libro
+                    2 - Ver tu historial de libros
+                    3 - Mostrar libros por idioma
+                    4 - Mostrar autores registrados
+                    5 - Mostrar autores vivos en un determinado año
+                    0 - Salir
+                    """;
+            System.out.println(menu);
+
+            try{
             System.out.println("Introduce el número de la opción que deseas: ");
-            String entrada = sc.nextLine();
-
-            // Verificar si la entrada es un número
-            if (esNumero(entrada)) {
-                opcion = Integer.parseInt(entrada);
-                entradaValida = true;
-            } else {
-                System.out.println("Entrada inválida. Por favor, introduce solo números.");
+            opcion = sc.nextInt();
+            }catch (InputMismatchException e){
+                System.out.println("Vuelve a intentarlo!");
             }
-        }
-
-        switch (opcion) {
-            case 1:
-                bucarLibro();
-                mostrarMenu();
-                break;
-            case 2:
-                mostrarHistorialLibros();
-                mostrarMenu();
-                break;
-            case 3:
-                mostrarEstadisticasPorIdioma();
-                mostrarMenu();
-                break;
-            case 4:
-                mostrarAutoresRegistrados();
-                mostrarMenu();
-                break;
-            case 5:
-                // mostrarLibrosPorIdioma();
-                break;
-            default:
-                System.out.println("Opción no válida");
-                break;
-        }
-    }
-
-    // Método auxiliar para verificar si una cadena es numérica
-    private boolean esNumero(String cadena) {
-        try {
-            Integer.parseInt(cadena);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
+            sc.nextLine();
+            switch (opcion) {
+                case 1:
+                    buscarLibro();
+                    break;
+                case 2:
+                    mostrarHistorialLibros();
+                    break;
+                case 3:
+                    mostrarEstadisticasPorIdioma();
+                    break;
+                case 4:
+                    mostrarAutoresRegistrados();
+                    break;
+                case 5:
+                    mostrarAutoresVivos();
+                    break;
+                case 0:
+                    System.out.println("Cerrando la aplicación...");
+                    break;
+                default:
+                    System.out.println("Opción inválida. Por favor, selecciona una opción válida.");
+            }
         }
     }
 
@@ -99,13 +82,28 @@ public class Principal {
     }
 
 
-    private void bucarLibro() {
+    private void buscarLibro() {
         System.out.println("Introduce el título del libro que deseas buscar: ");
         String titulo = sc.nextLine();
+        try{
         DatosLibro datosLibro = obtenerDatosLibro(titulo);
-        Libro libro = new Libro(datosLibro);
-        System.out.println(libro.toString());
-        repository.save(libro);
+            if (datosLibro == null) {
+                System.out.println("No se encontró ningún libro con el título: " + titulo);
+            } else {
+                Libro libro = new Libro(datosLibro);
+                System.out.println(libro.toString());
+                try {
+                    repository.save(libro);
+                }catch (DataIntegrityViolationException e) {
+                    if (e.getCause() instanceof ConstraintViolationException) {
+                        System.out.println("Este libro ya ha sido guardado!");
+                    }
+                }
+            }
+        }catch(Exception e){
+            System.out.println("Error al intentar buscar el libro: " + e.getMessage());
+        }
+
     }
 
     List<Libro> libros;
@@ -143,23 +141,56 @@ public class Principal {
         }
 
         List<Libro> librosEnIdioma = repository.findByIdioma(idioma);
-        librosEnIdioma.forEach(libro -> System.out.println(libro.toString()));
+        if (!librosEnIdioma.isEmpty()) {
+            librosEnIdioma.forEach(libro -> System.out.println(libro.toString()));
+        } else {
+            System.out.println("No se encontraron libros registrados en ese idioma.");
+        }
     }
 
     private void mostrarAutoresRegistrados() {
         System.out.println("-----Autores registrados-----");
         List<Autor> autores = autorRepository.findAll();
+        if(!autores.isEmpty()){
+            for (Autor autor : autores) {
+                System.out.println("Autor: " + autor.getNombre() +
+                        " (Nacido: " + autor.getAnioNacimiento() +
+                        ", Fallecido: " + autor.getAnioFallecimiento() + ")");
+                System.out.println("Libros:");
 
-        for (Autor autor : autores) {
-            System.out.println("Autor: " + autor.getNombre() +
-                    " (Nacido: " + autor.getAnioNacimiento() +
-                    ", Fallecido: " + autor.getAnioFallecimiento() + ")");
-            System.out.println("Libros:");
+                for (Libro libro : autor.getLibros()) {
+                    System.out.println("  - " + libro.toString());
+                }
 
-            for (Libro libro : autor.getLibros()) {
-                System.out.println("  - " + libro.getTitulo());
+                System.out.println(); // Separador entre autores
             }
-            System.out.println();
+        }else{
+            System.out.println("No hay autores vivos en ese año!");
+        }
+
+    }
+
+    private void mostrarAutoresVivos() {
+        System.out.println("------Autores Vivos-----");
+        System.out.println("Ingresa el año: ");
+        int anioIngresado = sc.nextInt();
+        List<Autor> autores = autorRepository.findAutoresVivosEnAno(anioIngresado);
+        autores.forEach(this::autorToString);
+
+
+    }
+
+    private void autorToString(Autor autor) {
+        System.out.println("-----Autor------\n" +
+                "Nombre: " + autor.getNombre() + '\n' +
+                "Nacido: " + autor.getAnioNacimiento() + '\n' +
+                "Fallecido: " + (autor.getAnioFallecimiento() != null ? autor.getAnioFallecimiento() : "Aún vive") + '\n' +
+                "Libros: ");
+
+        if (autor.getLibros() != null && !autor.getLibros().isEmpty()) {
+            autor.getLibros().forEach(libro -> System.out.println(" - " + libro.getTitulo()));
+        } else {
+            System.out.println(" - No tiene libros registrados.");
         }
     }
 }

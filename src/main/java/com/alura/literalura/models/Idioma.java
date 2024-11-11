@@ -7,9 +7,7 @@ public enum Idioma {
     INGLES("en","Inglés"),
     FRANCES("fr","Francés"),
     PORTUGUES("pt","Portugués"),
-    ITALIANO("it","Italiano"),
-    HUNGRIA("hu", "Hungaro"),
-    FINLANDIA("fi", "Finlandés");
+    ITALIANO("it","Italiano");
 
     private String idiomaApi;
     private String idiomaEsp;
@@ -25,7 +23,7 @@ public enum Idioma {
                 return idioma;
             }
         }
-        throw new IllegalArgumentException("Idioma no soportado: " + idiomaApi);
+        return null; // Devuelve null si no se encuentra el idioma
     }
 
     public static Idioma obtenerPorEspanol(String text){
