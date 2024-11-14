@@ -31,6 +31,7 @@ public class Principal {
                     3 - Mostrar libros por idioma
                     4 - Mostrar autores registrados
                     5 - Mostrar autores vivos en un determinado año
+                    6 - Mostrar top 5 mejores libros por descargas
                     0 - Salir
                     """;
             System.out.println(menu);
@@ -45,7 +46,6 @@ public class Principal {
             switch (opcion) {
                 case 1:
                     buscarLibro();
-                    mostrarTop5();
                     break;
                 case 2:
                     mostrarHistorialLibros();
@@ -58,6 +58,9 @@ public class Principal {
                     break;
                 case 5:
                     mostrarAutoresVivos();
+                    break;
+                case 6:
+                    mostrarTop5();
                     break;
                 case 0:
                     System.out.println("Cerrando la aplicación...");
@@ -108,7 +111,7 @@ public class Principal {
                 }
             }
         }catch(Exception e){
-            System.out.println("Error al intentar buscar el libro: " + e.getMessage());
+            System.out.println("Ya has guardado ese libro!");
         }
 
     }
