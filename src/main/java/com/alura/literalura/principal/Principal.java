@@ -66,7 +66,7 @@ public class Principal {
                     System.out.println("Cerrando la aplicación...");
                     break;
                 default:
-                    System.out.println("Opción inválida. Por favor, selecciona una opción válida.");
+                    System.out.println("Opción inválida. Por favor, selecciona una opción correcta.");
             }
         }
     }
