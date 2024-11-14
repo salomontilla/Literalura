@@ -45,6 +45,7 @@ public class Principal {
             switch (opcion) {
                 case 1:
                     buscarLibro();
+                    mostrarTop5();
                     break;
                 case 2:
                     mostrarHistorialLibros();
@@ -196,5 +197,12 @@ public class Principal {
         } else {
             System.out.println(" - No tiene libros registrados.");
         }
+    }
+    private void mostrarTop5(){
+        System.out.println("-----Top 5-----");
+        repository.findTop5ByOrderByNumeroDescargasDesc()
+                .forEach(libro ->
+                        System.out.println("Titulo: " + libro.getTitulo() + "\n"
+                + "Descargas: " + libro.getNumeroDescargas() + "\n"));
     }
 }
